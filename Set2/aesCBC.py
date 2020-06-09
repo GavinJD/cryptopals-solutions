@@ -1,4 +1,4 @@
-from pkcs7Pad import pkcs7Pad
+from pkcs7Pad import pkcs7Pad, pkcs7Strip
 from Cryptodome import Random
 from Cryptodome.Cipher import AES
 
@@ -34,12 +34,12 @@ class AES_CBC:
                   for i in range(0, len(cipherText), AES.block_size)]
 
         message = b""
-        message += fixedXOR(self.ecb.decrypt(blocks[0]), iv)
+        message += fixedXOR(self.ecb.decrypt(blocks[0]), self.iv)
         for i in range(1, len(blocks)):
             tmp = self.ecb.decrypt(blocks[i])
             message += fixedXOR(blocks[i-1], tmp)
 
-        return message
+        return pkcs7Strip(message, AES.block_size)
 
 
 if __name__ == "__main__":

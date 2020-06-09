@@ -45,45 +45,47 @@ class ProfileManager:
             print(f'Email: {email}, ACESS DENIED')
 
 
-def encodeCookie(cookie):
-    def removeMeta(s):
-        if type(s) == type('string'):
-            s = s.replace('&', '\"&\"')
-            s = s.replace('=', '\"=\"')
-        return s
+def removeMeta(s, meta):
+    if type(s) == type('string'):
+        for char in meta:
+            s = s.replace(char, '\"' + char + '\"')
+    return s
 
+
+def addMeta(s, meta):
+    if type(s) == type('string'):
+        for char in meta:
+            s = s.replace('\"' + char + '\"', char)
+    return s
+
+
+def metaSplit(s, char):
+    resultList = []
+    prev = 0
+    for i in range(len(s)):
+        if s[i] == char and s[i+1] != '\"':
+            resultList.append(s[prev:i])
+            prev = i + 1
+    resultList.append(s[prev:])
+    return resultList
+
+
+def encodeCookie(cookie):
     result = ''
     for key, value in cookie.items():
-        key = removeMeta(key)
-        value = removeMeta(value)
+        key = removeMeta(key, '&=')
+        value = removeMeta(value, '&=')
         result += str(key) + "=" + str(value) + "&"
     return result[:-1]
 
 
 def decodeCookie(encodedCookie):
-    def addMeta(s):
-        if type(s) == type('string'):
-            s = s.replace('\"&\"', '&')
-            s = s.replace('\"=\"', '=')
-        return s
-
-    def metaSplit(s, char):
-        resultList = []
-        prev = 0
-        for i in range(len(s)):
-            if s[i] == char and s[i+1] != '\"':
-                resultList.append(s[prev:i])
-                prev = i + 1
-        resultList.append(s[prev:])
-        return resultList
-
     itemList = metaSplit(encodedCookie, '&')
-
     result = {}
     for pair in itemList:
         key, value = metaSplit(pair, '=')
-        key = addMeta(key)
-        value = addMeta(value)
+        key = addMeta(key, '&=')
+        value = addMeta(value, '&=')
         result[key] = value
     return result
 

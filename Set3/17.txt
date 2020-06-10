@@ -1,0 +1,7 @@
+A cipherblock’s decrypted form depends only on itself and the preceding cipherblock. So we can ap
+ply the above algorithm to every block in the ciphertext (apart from the first o
+ne). The first cipherblock would have been encrypted using an IV (initialization vector), a secret cipher
+block chosen by the encrypter during the encryption process. Unless we kno
+w the IV, we can’t decrypt the first block. There is nothing particularly clever we can do here, apart from trying stupidly obvi
+ous values like [0, 0, 0, …] for the IV an
+d seeing if we get anything sensible out. Hopefully the first 16 bytes will just be something like “Dearest
